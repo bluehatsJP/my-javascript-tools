@@ -1,0 +1,381 @@
+@CHARSET "utf-8";
+/*---------------------------------------------------------------------
+ * Base styles 
+ *
+ * 基本レイアウト
+ *---------------------------------------------------------------------*/
+
+/*-----------------------------------
+ * clearfix：
+ *-----------------------------------*/
+.clearfix:after { /* for all modern browsers */
+	height: 0;
+	width: 0;
+	visibility: hidden;
+	content: ".";
+	display: block;
+	clear: both;
+}
+.clearfix {display: inline-block;} /* for ie */
+
+/*-----------------------------------
+ * see-through：
+ *-----------------------------------*/
+.see-through {
+	filter: alpha(opacity=80); /* ie */
+	-moz-opacity:0.80; /* firefox,netscape*/
+	opacity:0.80; /* opera,safari */
+}
+
+/*-----------------------------------
+ * a：アンカータグの基本
+ *-----------------------------------*/
+/*a {
+	color: #09c;
+	border-bottom: 1px solid #09c;
+}
+a:hover {
+	background-color: #9cf;
+}*/
+
+/*---------------------------------------------------------------------
+ * 全体構成
+ *---------------------------------------------------------------------*/
+/* for sticky footer */
+html{
+	height:100%; 
+}
+
+body {
+	background-color: #fff;
+	text-align: center; /* for ie centering*/
+	height:100%; /* for sticky footer */
+}
+/*-----------------------------------
+ * container:全体枠
+ *-----------------------------------*/
+#container {
+	/* 全体をセンタリング */
+	margin-left: auto;
+	margin-right: auto;
+	text-align: justify;
+	background-color:#fff;
+	
+	/* for sticky footer */
+	width: 100%;
+	position: relative;
+	height: 100%;
+	min-height: 100%;
+}
+/* for sticky footer */
+body > #container {
+	height: auto;
+}
+
+/*-----------------------------------
+ * header:ヘッダー部、main:メイン部、footer:フッター部
+ *-----------------------------------*/
+#header, #main, #footer {
+	clear:both;
+}
+/*-----------------------------------
+ * header:ヘッダー部
+ *		header-info:	ユーザ名など記述
+ *		h1:			タイトル
+ *		header-nav:	パンくずリストなど
+ *-----------------------------------*/
+#header {
+	padding: 5px 10px;
+	/*background-color:#003;
+	background: transparent url(../images/h_blue.gif) repeat scroll 50% 90%;*/
+	border-top: 2px solid #0cf;
+	border-bottom: 1px solid #fff;
+	background: url(../images/header.png) repeat-x bottom;
+}
+/*-----------------------------------
+ * header-info:	ユーザ名など記述するエリア
+ *-----------------------------------*/
+#header-info {
+	float:right;
+}
+#header-info span {/*中身*/
+	margin:2px 1em;
+}
+
+/* ヘルプ */
+a#help {
+	display:block;
+	float:right;
+	border:none;
+	width:22px;
+	height:22px;
+	background: transparent url(../images/help.gif) no-repeat;
+}
+a:hover#help {
+	background: transparent url(../images/help_red.gif) no-repeat;
+}
+#help span{
+	display:none;
+}
+
+/*-----------------------------------
+ * h1:	タイトル
+ *-----------------------------------*/
+#header h1{
+	font-size:1.4em;
+}
+
+/*-----------------------------------
+ * header-nav:	パンくずリストやログアウトリンクなど記述するエリア
+ *-----------------------------------*/
+#header-nav {
+	padding:0 10px;
+	/*background-color:#39c;
+	background: url(../images/h_blue.gif) scroll 50% 60%;*/
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+	background: url(../images/header.png) repeat-x bottom;
+	height:1.6em;
+}
+/*
+#header-nav:after { 
+	height: 0;
+	width: 0;
+	visibility: hidden;
+	content: "";
+	display: block;
+	clear: both;
+}
+*/
+/*#header-nav {display: inline-block;}*/ /* for ie */
+
+
+/*
+#header-nav a {
+	display:block;
+	color: #09c;
+	border-bottom: solid 1px;
+}
+#header-nav a:hover {
+	background-color: #9cf;
+}
+*/
+
+/*-----------------------------------
+ * breadcrumbs:	パンくずリスト
+ *-----------------------------------*/
+div#breadcrumbs {
+	float: left;
+	margin:5px 0 5px 0;
+	padding-left:10px;
+}
+/*
+#breadcrumbs li {
+	margin:5px 0 5px 0;
+	float: left;
+	padding-right:15px;
+	padding-left:10px;
+	background:url(../images/arrow.gif) no-repeat right;
+}
+*/
+
+#breadcrumbs .current, #breadcrumbs strong {
+	background: transparent;
+	font-weight: bold;
+}
+
+/*-----------------------------------
+ * nav:	ナビゲーション
+ *-----------------------------------*/
+#nav {
+	display:block;
+	float: right;
+	border-right:solid 1px #cfcfcf;
+	border-left:solid 1px #ffffff;
+}
+#nav a {
+	display:block;
+	padding:0 20px;
+	float:left;
+	border-right:solid 1px #ffffff;
+	border-left:solid 1px #cfcfcf;
+	border-bottom:none;
+	line-height:1.6em;
+}
+#nav li{
+	float:left;
+}
+
+/*-----------------------------------
+ * logout:	ログアウト
+ *-----------------------------------*/
+
+a#logout {
+	background: url(../images/door_out_gray.gif)  no-repeat 2% 50%;
+}
+a:hover#logout {
+	background: #9cf url(../images/door_out.gif)  no-repeat 2% 50%;
+}
+
+/*-----------------------------------
+ * main:メイン部
+ *-----------------------------------*/
+#main {/* 全体をセンタリング for ie */
+	/*margin-top:12px;*/
+	text-align: center;
+	padding-top: 14px;
+	border-top: 1px solid #fff;
+	background: url(../images/main.png) repeat-x top;
+	padding-bottom: 14px; /* for sticky footer :フッタの高さを指定*/
+}
+
+form {
+	margin-left: auto;
+	margin-right: auto;
+	text-align: justify;
+}
+
+/*-----------------------------------
+ * footer:フッター部
+ *-----------------------------------*/
+#footer {
+	background-color:#999;
+	text-align:center;
+	border-top: 1px solid #0cf;
+	margin-top:2px;
+	/*
+	*/
+	background: url(../images/footer.png) repeat-x bottom;
+
+/* for sticky footer */
+	width: 100%;
+	position:absolute;
+	bottom: 0px;
+	height: 12px;
+}
+#footer span{
+	font-size:10px;
+}
+#footer a{
+	color:#999;
+	border:none;
+}
+
+/*-----------------------------------
+ * submenu:サブメニュー画面
+ *-----------------------------------*/
+fieldset.submenu {
+	display:block;
+	margin: 10px auto;
+	text-align:justify;
+}
+dl.submenu {
+	margin: 5px auto 20px auto;
+}
+dl.submenu dt {
+	margin-top: 1em;
+}
+dl.submenu dd {
+	margin-left: 3em;
+	margin-top: 0.2em;
+}
+fieldset.submenu h3 {
+	margin-top:0.5em;
+	margin-left:0.5em;
+	color:#333;
+}
+dl.submenu a {
+	display:block;
+	padding: 5px 5px 1px 8px;
+}
+dl.submenu dt a {
+	width:100%;
+}
+
+
+/*-----------------------------------
+ * .info, .success, .warning, .error:メッセージ
+ *-----------------------------------*/
+
+.info, .success, .warning, .error {
+	border: 1px solid;
+	padding: 5px 0;
+	text-align: justify;
+}
+.info li, .success li, .warning li, .error li {
+	padding-left: 30px;
+	line-height:1.4;
+	background-repeat: no-repeat;
+	background-position: 10px center;
+}
+
+.info {
+	color: #666 /*#069*/;
+	background-color: transparent;
+	border-color: #f9f9f9;
+}
+
+.info li {
+	background-image: url('../images/info.gif');
+}
+.success {
+	color: #09c;
+	background-color: #D5ECFF; 
+}
+.success li {
+	background-image:url('../images/success.gif');
+}
+.warning {
+	color: #960;
+	background-color: #ffc;
+}
+.warning li {
+	background-image: url('../images/warning.gif');
+}
+.error {
+	color: #FF3860;
+	background-color: #FDD8DF;
+}
+.error li {
+	background-image: url('../images/error.gif');
+}
+
+/*-----------------------------------
+ * .box:箱型リンク
+ *-----------------------------------*/
+
+a.box{
+    background-color:#fff;
+    text-decoration: none;
+    cursor: pointer;
+}
+a.box:link, a.box:visited{
+    border-color:#cfcfcf;
+    color:#6f6f6f !important;
+}
+a.box:hover {
+    background-color:#efefef;
+    border-color:#cfcfcf;
+    color:#000;
+}
+a.box:hover strong {
+    color:#FF3860;
+}
+
+.box {
+    display:block;
+    margin:4px auto;
+    padding:6px 8px;
+    border:1px solid #cfcfcf;
+} 
+.box strong{
+    display:block;
+    font-size:1.2em;
+    color:#00A7CF;
+    margin-bottom:3px;
+    font-weight:normal;
+}
+.box img {
+    float:left;
+    margin:0 8px 0 0;
+}

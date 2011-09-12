@@ -1,0 +1,122 @@
+@CHARSET "shift-jis";
+@import url("reset.css");	/* ブラウザ毎の特性を除去する*/
+@import url("structure.css");	/* html構造のスタイルを設定する */
+@import url("form.css");	/* フォーム要素のスタイルを設定する */
+@import url("form_table.css");	/* フォーム要素のスタイルを設定する */
+@import url("table.css");	/* テーブルのスタイルを設定する */
+
+/*--------------------------------------------------------------
+ * 業務データ内容に合わせたカラーリング
+ *-------------------------------------------------------------*/
+
+/*-----------------------------
+ * グループタイトル
+ *----------------------------*/
+/* 基本 */
+h3, legend{
+	padding-left:20px;
+	background:transparent url(../images/white.gif) no-repeat;
+}
+/* 支払実績 */
+h3.shiharai-jisseki, legend.shiharai-jisseki{
+	background:transparent url(../images/blue.gif) no-repeat;
+	color:#0066CC;
+}
+/* 支払内訳 */
+h3.shiharai-uchiwake, legend.shiharai-uchiwake{
+	background:transparent url(../images/green.gif) no-repeat;
+	color:#008A00;
+}
+/* 支払実績/内訳明細 */
+h3.shiharai-ju-meisai, legend.shiharai-ju-meisai{
+	background:transparent url(../images/orange.gif) no-repeat;
+	/*color:#FAA800;*/
+	color:#FFB900;
+}
+
+/* 要注意 */
+h3.attention, legend.attention{
+	background:transparent url(../images/pink.gif) no-repeat;
+	color:#FA3DA9;
+}
+
+/*-----------------------------
+ * テーブルのタイトル
+ * 使用例：(一覧形式かつ支払実績)
+ * <table class="list shiharai-jisseki">
+ *----------------------------*/
+/* 支払実績 */
+.shiharai-jisseki th{
+	background: #99CCFF;
+}
+/* 支払内訳 */
+.shiharai-uchiwake th{
+	background: #99CC66;
+}
+/* 支払実績/内訳明細 */
+.shiharai-ju-meisai th{
+	/*background: #FFCC99;*/
+	background: #FFE08F;
+}
+
+/* 要注意 */
+.attention th{
+	background: #FFCCCC;
+}
+
+/*-----------------------------
+ * セルタイトル個別設定
+ * ※注意！
+ * 通常は使用しない。（テーブル単位で一括指定）
+ * 一つのテーブルで複数のカラーリングが必要になったときのみ使用
+ *----------------------------*/
+/* 支払実績 */
+th.shiharai-jisseki {
+	background: #99CCFF;
+}
+/* 支払実績/内訳明細 */
+th.shiharai-ju-meisai {
+	/*background: #FFCC99;*/
+	background: #FFE08F;
+}
+
+/*-----------------------------
+ * 各種要注意
+ *----------------------------*/
+/* データ */
+td.attention, input.attention, span.attention {
+	color:#FA3DA9;
+}
+/* セルタイトル */
+th.attention {
+	background: #FFCCCC;
+}
+
+
+/*--------------------------------------------------------------
+ * 印刷時の設定
+ *-------------------------------------------------------------*/
+
+@media print{
+	/* スクロールはやめる（ただしスーパーテーブルは効かない）*/
+	.scroll, .scroll-super-table {
+		height: auto;
+		overflow: visible;
+	}
+	
+	/*-----------------------------
+	 * 非表示
+	 *----------------------------*/
+	/* 情報メッセージ */
+	.info {
+		display: none;
+	}
+	/* パンくずリストとログインがはいってるとこ */
+	#header-nav {
+		display: none;
+	}
+	/* ボタン表示してるとこ */
+	.buttonbar {
+		display: none;
+	}
+}

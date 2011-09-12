@@ -1,0 +1,344 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link href="jquery.treeview/jquery.treeview.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+    <script type="text/javascript" src="jquery.watermarkinput.js"></script>
+    <script type="text/javascript" src="jquery.treeview/jquery.treeview.js"></script>
+    <script type="text/javascript" src="soapclient.js"></script>
+    <script type="text/javascript">
+        var portname = "BasicHttpBinding_IRemittance";
+        var gOperationParams;
+        var gSession;
+        function getSession()
+        {
+            // 同期処理でInitializeServiceを実行し、session情報取得
+            var wsdlurl = document.getElementById("wsdlURL").value;
+            var endpointurl = document.getElementById("endPointURL").value;
+            var soapaction = "http://*****/ws/IRemittance/InitializeService";
+            //var sessionKey = document.getElementById("sessionKey").value;
+            //var sessionKey = $('#sessionKey option:selected').val();
+            var sessionKey = $('#sessionKey option:selected').val();
+            alert("sessionKey=" + sessionKey);
+            var pl = new SOAPClientParameters();
+            pl.add("key", sessionKey);
+            try
+            {
+                gSession = SOAPClient.invoke(wsdlurl, endpointurl, soapaction, pl, false);
+            }
+            catch(e)
+            {
+                alert("InitializeService failure");
+                throw e;
+            }
+        }
+        function getOperation()
+        {
+            var wsdlurl = document.getElementById("wsdlURL").value;
+            var operation = SOAPClient.getOperation(wsdlurl,portname);
+
+            if (document.getElementById("operation") == null)
+            {
+                jQuery('<label>', { html: '&nbsp;OPERATION LIST&nbsp;:&nbsp;&nbsp;'}).appendTo( '#header' );
+            }
+            else{
+               $('#header').remove();
+               $('#operationParams').remove();
+               $('#soaprequest').remove();
+               $('#soapresponse').remove();
+            }
+
+            jQuery('<div>', { id:'header'}).appendTo( 'form:first' );
+
+            jQuery('<select>', { id: 'operation'}).appendTo( '#header' );
+            for (var i in operation)
+            {
+                jQuery('<option>', { selected: i == 0, val: operation[i], text: i }).appendTo( '#operation' );
+            }
+            //jQuery('<br>').appendTo( '#header' );
+            jQuery('<input>', { id:'getoperation',type: 'button', value: 'GetOperationParams', style:'width:200px', click: function() { GetOperationParams(); }}).appendTo( '#header' );
+            // debug
+            /*for (var i in operation)
+            {
+                alert("operationnName:" + i);
+                alert("operationSoapAction:" + operation[i]);
+            }*/
+        }
+        function GetOperationParams()
+        {
+           if (document.getElementById("operationParams") != null)
+           {
+               $('#operationParams').remove();
+           }
+           if (document.getElementById("soaprequest") != null)
+           {
+               $('#soaprequest').remove();
+           }
+           if (document.getElementById("soapresponse") != null)
+           {
+               $('#soapresponse').remove();
+           }
+           
+           var wsdlurl = document.getElementById("wsdlURL").value;
+           //var operaionName = $('#[operation] option:selected').text();
+           var operaionName = $('#operation option:selected').text();
+           gOperationParams = SOAPClient.getOperationParams(wsdlurl,portname,operaionName);
+
+           jQuery('<div>', { id:'operationParams'}).appendTo( 'form:first' );
+           jQuery('<ul>', { id:'operationParamsTree'}).appendTo( '#operationParams');
+           //jQuery('<li>', { id:operaionName}).appendTo( '#operationParamsTree');
+           //jQuery('<a>', { href:'?#',html:operaionName}).appendTo( '#' + operaionName);
+
+           jQuery('<input>', { id:'SendSoapRequest',type: 'button', value: 'SendSoapRequest', style:'width:200px', click: function() { SendSoapRequest(); }}).appendTo( '#operationParams' );
+
+           ShowOperationParams(gOperationParams,'operationParamsTree');
+
+           $("#operationParamsTree").treeview({
+                                collapsed: true,
+                                animated: "medium",
+                                //control: "#sidetreecontrol",
+                                persist: "location"
+                                });
+        }
+        function ShowOperationParams(operationParams,id)
+        {
+           // session情報自動補完
+           if (id.indexOf("session") != -1 && gSession != null)
+           {
+                jQuery('<li>', { id: id + "_Channel_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_Channel",type: 'text',value:gSession.CurrentSession.Channel}).appendTo( '#' + id + "_Channel_li");
+                jQuery('<label>', {html:" = Channel"}).appendTo( '#' + id + "_Channel_li");
+                $("#" + id + "_Channel").blur(id + "_Channel", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_Channel",gOperationParams,id + "_Channel");
+
+                jQuery('<li>', { id: id + "_CultureName_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_CultureName",type: 'text',value:gSession.CurrentSession.CultureName}).appendTo( '#' + id + "_CultureName_li");
+                jQuery('<label>', {html:" = CultureName"}).appendTo( '#' + id + "_CultureName_li");
+                $("#" + id + "_CultureName").blur(id + "_CultureName", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_CultureName",gOperationParams,id + "_CultureName");
+
+                jQuery('<li>', { id: id + "_Description_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_Description",type: 'text',value:gSession.CurrentSession.Description}).appendTo( '#' + id + "_Description_li");
+                jQuery('<label>', {html:" = Description"}).appendTo( '#' + id + "_Description_li");
+                $("#" + id + "_Description").blur(id + "_Description", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_Description",gOperationParams,id + "_Description");
+
+                jQuery('<li>', { id: id + "_ExternalApplicationId_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_ExternalApplicationId",type: 'text',value:gSession.CurrentSession.ExternalApplicationId}).appendTo( '#' + id + "_ExternalApplicationId_li");
+                jQuery('<label>', {html:" = ExternalApplicationId"}).appendTo( '#' + id + "_ExternalApplicationId_li");
+                $("#" + id + "_ExternalApplicationId").blur(id + "_ExternalApplicationId", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_ExternalApplicationId",gOperationParams,id + "_ExternalApplicationId");
+
+                jQuery('<li>', { id: id + "_ExternalUserId_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_ExternalUserId",type: 'text',value:gSession.CurrentSession.ExternalUserId}).appendTo( '#' + id + "_ExternalUserId_li");
+                jQuery('<label>', {html:" = ExternalUserId"}).appendTo( '#' + id + "_ExternalUserId_li");
+                $("#" + id + "_ExternalUserId").blur(id + "_ExternalUserId", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_ExternalUserId",gOperationParams,id + "_ExternalUserId");
+
+                jQuery('<li>', { id: id + "_MembershipObtained_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_MembershipObtained",type: 'text',value:gSession.CurrentSession.MembershipObtained}).appendTo( '#' + id + "_MembershipObtained_li");
+                jQuery('<label>', {html:" = MembershipObtained"}).appendTo( '#' + id + "_MembershipObtained_li");
+                $("#" + id + "_MembershipObtained").blur(id + "_MembershipObtained", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_MembershipObtained",gOperationParams,id + "_MembershipObtained");
+
+                jQuery('<li>', { id: id + "_PrincipalClient_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_PrincipalClient",type: 'text',value:gSession.CurrentSession.PrincipalClient}).appendTo( '#' + id + "_PrincipalClient_li");
+                jQuery('<label>', {html:" = PrincipalClient"}).appendTo( '#' + id + "_PrincipalClient_li");
+                $("#" + id + "_PrincipalClient").blur(id + "_PrincipalClient", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_PrincipalClient",gOperationParams,id + "_PrincipalClient");
+
+                jQuery('<li>', { id: id + "_PrincipalClientName_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_PrincipalClientName",type: 'text',value:gSession.CurrentSession.PrincipalClientName}).appendTo( '#' + id + "_PrincipalClientName_li");
+                jQuery('<label>', {html:" = PrincipalClientName"}).appendTo( '#' + id + "_PrincipalClientName_li");
+                $("#" + id + "_PrincipalClientName").blur(id + "_PrincipalClientName", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_PrincipalClientName",gOperationParams,id + "_PrincipalClientName");
+
+                jQuery('<li>', { id: id + "_PrincipalLogin_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_PrincipalLogin",type: 'text',value:gSession.CurrentSession.PrincipalLogin}).appendTo( '#' + id + "_PrincipalLogin_li");
+                jQuery('<label>', {html:" = PrincipalLogin"}).appendTo( '#' + id + "_PrincipalLogin_li");
+                $("#" + id + "_PrincipalLogin").blur(id + "_PrincipalLogin", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_PrincipalLogin",gOperationParams,id + "_PrincipalLogin");
+
+                jQuery('<li>', { id: id + "_PrincipalProfile_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_PrincipalProfile",type: 'text',value:gSession.CurrentSession.PrincipalProfile}).appendTo( '#' + id + "_PrincipalProfile_li");
+                jQuery('<label>', {html:" = PrincipalProfile"}).appendTo( '#' + id + "_PrincipalProfile_li");
+                $("#" + id + "_PrincipalProfile").blur(id + "_PrincipalProfile", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_PrincipalProfile",gOperationParams,id + "_PrincipalProfile");
+
+                jQuery('<li>', { id: id + "_Service_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_Service",type: 'text',value:gSession.CurrentSession.Service}).appendTo( '#' + id + "_Service_li");
+                jQuery('<label>', {html:" = Service"}).appendTo( '#' + id + "_Service_li");
+                $("#" + id + "_Service").blur(id + "_Service", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_Service",gOperationParams,id + "_Service");
+
+                jQuery('<li>', { id: id + "_SessionId_li"}).appendTo( '#' + id);
+                jQuery('<input>', { id:id + "_SessionId",type: 'text',value:gSession.CurrentSession.SessionId}).appendTo( '#' + id + "_SessionId_li");
+                jQuery('<label>', {html:" = SessionId"}).appendTo( '#' + id + "_SessionId_li");
+                $("#" + id + "_SessionId").blur(id + "_SessionId", function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                SetOperationParam(id + "_SessionId",gOperationParams,id + "_SessionId");
+           }
+           else
+           {
+               for (var i in operationParams)
+               {
+                    if (i.length > 0) {
+                        //alert("OperationParamsName:" + i);
+                        //alert("OperationParamsValue:" + operationParams[i]);
+                        if (operationParams[i] instanceof Object)
+                        {
+                            jQuery('<li>', { id:id + "_" + i + '_li'}).appendTo( '#' + id);
+                            //jQuery('<a>', { href:'?#',html:i}).appendTo( '#' + id + "_" + i + '_li');
+                            jQuery('<label>', {html:i}).appendTo( '#' + id + "_" + i + '_li');
+                            jQuery('<ul>', { id:id + "_" + i}).appendTo( '#' + id + "_" + i + '_li');
+                            ShowOperationParams(operationParams[i],id + "_" + i);
+                        }
+                        else
+                        {
+                            //jQuery('<br>').appendTo( '#operationParams' );
+                            //jQuery('<input>', { id:i,type: 'text'}).appendTo( '#operationParams' );
+                            jQuery('<li>', { id: id + "_" + i + '_li'}).appendTo( '#' + id);
+                            jQuery('<input>', { id:id + "_" + i,type: 'text'}).appendTo( '#' + id + "_" + i + '_li');
+                            jQuery('<label>', {html:" = " + i}).appendTo( '#' + id + "_" + i + '_li');
+                            //$("#" + id + "_" + i).Watermark(i);
+                            $("#" + id + "_" + i).blur(id + "_" + i, function(event) {SetOperationParam(event.data,gOperationParams,event.data)});
+                        }
+                    }
+               }
+           }
+        }
+        function SetOperationParam(htmlId,operationParams,pParamId)
+        {
+            var paramId = pParamId;
+            //alert("paramId=" + paramId);
+            //alert("value=" + $("#" + htmlId).val())
+            if (paramId.indexOf("operationParamsTree_") != -1)
+            {
+                //alert("remove operationParamsTree_");
+                paramId = paramId.substr(20);
+            }
+            if (paramId.indexOf("_") != -1)
+            {
+                var preParamId = paramId.substr(0,paramId.indexOf("_"));
+                paramId = paramId.substr(paramId.indexOf("_") + 1);
+                SetOperationParam(htmlId,operationParams[preParamId],paramId);
+            }
+            else
+            {
+                //alert("paramId=" + paramId);
+                //alert("setParam(before)=" + operationParams[paramId]);
+                operationParams[paramId] = $("#" + htmlId).val();
+                //alert("setParam(after)=" + operationParams[paramId]);
+            }
+        }
+        function SendSoapRequest()
+        {
+            var wsdlurl = document.getElementById("wsdlURL").value;
+            //var operaionName = $('#[operation] option:selected').val();
+            var operaionName = $('#operation option:selected').val();
+            alert(operaionName);
+            var endPointUrl = document.getElementById("endPointURL").value;
+            var pl = CreateSOAPClientParameters(gOperationParams);
+
+            // 非同期処理でSOAPクライアント起動
+            try
+            {
+                if (document.getElementById("soaprequest") != null)
+                {
+                    $('#soaprequest').remove();
+                }
+                if (document.getElementById("soapresponse") != null)
+                {
+                    $('#soapresponse').remove();
+                }
+                var requestMessage = SOAPClient.invoke(wsdlurl, endPointUrl, operaionName, pl, true, SendSoapRequest_callBack);
+                requestMessage = requestMessage.replace(new RegExp("><","g"),">\r\n<");
+                jQuery('<div>', { id:'soaprequest'}).appendTo( 'form:first' );
+                jQuery('<label>', { html: 'SOAP REQUEST MESSAGE'}).appendTo( '#soaprequest' );
+                jQuery('<br>').appendTo( '#soaprequest' );
+                jQuery('<textarea>', { id:'requestMessage',cols: '100', rows:'10', value: requestMessage}).appendTo( '#soaprequest' );
+
+                //fileOutPut("C:/*****/SoapRequest.xml",requestMessage);
+            }
+            catch(e)
+            {
+                alert("CreateAndGetRemittance failure");
+                throw e;
+            }
+        }
+        function SendSoapRequest_callBack(r,soapresponse)
+	{
+            //alert(soapResponse.xml);
+            if (r instanceof Error)
+            {
+                alert(r.message);
+            }
+            else if(r == null)
+            {
+		alert("SendSoapRequest failure");
+            }
+
+            // debug
+            if (soapresponse != null)
+            {
+                if (document.getElementById("soapresponse") != null)
+                {
+                    $('#soapresponse').remove();
+                }
+                var responseMessage = soapresponse;
+                responseMessage = responseMessage.replace(new RegExp("><","g"),">\r\n<");
+                jQuery('<div>', { id:'soapresponse'}).appendTo( 'form:first' );
+                jQuery('<label>', { html: 'SOAP RESPONSE MESSAGE'}).appendTo( '#soapresponse' );
+                jQuery('<br>').appendTo( '#soapresponse' );
+                jQuery('<textarea>', { id:'responseMessage',cols: '100', rows:'20', value: responseMessage}).appendTo( '#soapresponse' );
+
+                //fileOutPut("C:/*****/SoapResponse.xml",responseMessage);
+            }
+	}
+        function CreateSOAPClientParameters(operationParams)
+        {
+           var pl = new SOAPClientParameters();
+           for (var i in operationParams)
+           {
+                if (i.length > 0) {
+                    if (operationParams[i] instanceof Object)
+                    {
+                        pl.add(i, CreateSOAPClientParameters(operationParams[i]));
+                    }
+                    else if (operationParams[i].length > 0)
+                    {
+                        pl.add(i, operationParams[i]);
+                    }
+                }
+           }
+           return pl;
+        }
+        function fileOutPut(fileNum, file)
+        {
+            var fso = new ActiveXObject("Scripting.FileSystemObject");
+            // 書き込みモード(追記なし)でファイル作成
+            TFile = fso.OpenTextFile(fileNum,2,true);
+
+            TFile.Write(file);
+            TFile.Close();
+        }
+    </script>
+  </head>
+  <body style="background: whitesmoke">
+      <form id="headerform" name="headerform" action="">
+          WSDL URL&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;<input type="text" id="wsdlURL" value="http://*****/RemittanceService/Arias.Jp.Api.Remittance.svc?wsdl" size="75" /><br/>
+          END POINT URL&nbsp;:&nbsp;<input type="text" id="endPointURL" value="http://*****/RemittanceService/Arias.Jp.Api.Remittance.svc/basic" size="75" /><br/>
+          SELECT SESSION KEY&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:&nbsp;
+          <select id="sessionKey">
+              <option value="*****" selected>A-BANK</option>
+              <option value="*****">B-BANK</option>
+          </select>
+          <input type="button" value="GetSoapAction & GetSession" onclick="getOperation();getSession();" style="width: 200px"/><br/><hr>
+      </form>
+  </body>
+</html>

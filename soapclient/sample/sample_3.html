@@ -1,0 +1,641 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8"/>
+    <title>CreateAndGetRemittance</title>
+        <link href="tablesorter/blue/style.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+	<script type="text/javascript" src="soapclient.js"></script>
+	<script type="text/javascript">
+        $(function()
+        {
+            // コンボ内容取得
+        })
+        //var progressStr = "処理中です。しばらくお待ちください";
+        //var timeID = 0;
+        // GetTransaction
+	function CreateAndGetRemittance()
+	{
+            try
+            {
+                // 進捗表示
+                //document.getElementById("progress").innerHTML = progressStr;
+                //timeID = setInterval("progress(\"progress\")", 100);
+
+                // 同期処理でInitializeServiceを実行し、session情報取得
+                var wsdlurl = "http://*****/RemittanceService/Arias.Jp.Api.Remittance.svc?wsdl";
+                var endpointurl = "http://*****/RemittanceService/Arias.Jp.Api.Remittance.svc/basic";
+                var soapaction = "http://*****/ws/IRemittance/InitializeService";
+		var pl = new SOAPClientParameters();
+                pl.add("key", "*****");
+                try
+                {
+                    var session = SOAPClient.invoke(wsdlurl, endpointurl, soapaction, pl, false);
+                }
+                catch(e)
+                {
+                    alert("InitializeService failure");
+                    throw e;
+                }
+
+                // ticket取得
+                soapaction = "http://*****/ws/IBliRemittanceCore/CreateTransactionTicket";
+                pl = new SOAPClientParameters();
+                //SOAPアクションのパラメータ設定(session設定)
+                    var plSes = new SOAPClientParameters();
+                    plSes.add("Channel",session.CurrentSession.Channel);
+                    plSes.add("ExternalApplicationId",session.CurrentSession.ExternalApplicationId);
+                    plSes.add("ExternalUserId",session.CurrentSession.ExternalUserId);
+                    plSes.add("MembershipObtained",session.CurrentSession.MembershipObtained);
+                    plSes.add("PrincipalClient",session.CurrentSession.PrincipalClient);
+                    plSes.add("PrincipalClientName",session.CurrentSession.PrincipalClientName);
+                    plSes.add("PrincipalLogin",session.CurrentSession.PrincipalLogin);
+                    plSes.add("PrincipalProfile",session.CurrentSession.PrincipalProfile);
+                    plSes.add("Service",session.CurrentSession.Service);
+                    plSes.add("SessionId",session.CurrentSession.SessionId);
+                pl.add("session", plSes);
+                try
+                {
+                    var ticket = SOAPClient.invoke(wsdlurl, endpointurl, soapaction, pl, false);
+                }
+                catch(e)
+                {
+                    alert("CreateTransactionTicket failure");
+                    throw e;
+                }
+
+                // debug
+                alert("ticket = " + ticket);
+
+                // 為替レート取得
+                soapaction = "http://*****/ws/IBliRemittanceCore/CalculateRemittanceCosts";
+                pl = new SOAPClientParameters();
+                    // SOAPアクションのパラメータ設定(RemittanceTransaction設定)
+                    var plDes = new SOAPClientParameters();
+                    // SOAPアクションのパラメータ設定(送金業者支店情報設定)
+                    if (document.getElementById("OriBranchId").value != "")
+                    {
+                            var plOriBranch = new SOAPClientParameters();
+                            plOriBranch.add("Id",document.getElementById("OriBranchId").value);
+                        plDes.add("Branch",plOriBranch);
+                    }
+                    // SOAPアクションのパラメータ設定(仲介業者設定)
+                    if (document.getElementById("IntPaymentAgentCode").value != "" && document.getElementById("IntPaymentAgentType").value != "" )
+                    {
+                            var plInter = new SOAPClientParameters();
+                            plInter.add("PaymentAgentCode",document.getElementById("IntPaymentAgentCode").value);
+                            plInter.add("PaymentAgentType",document.getElementById("IntPaymentAgentType").value);
+                        plDes.add("Intermediary",plInter);
+                    }
+                    if (document.getElementById("OriginatorId").value != "") plDes.add("OriginatorId",document.getElementById("OriginatorId").value);
+                    if (document.getElementById("PaymentAccountId").value != "" && document.getElementById("PaymentAccountReference").value != "" )
+                    {
+                        // SOAPアクションのパラメータ設定(受取人口座設定)
+                            var plPayAcc = new SOAPClientParameters();
+                            plPayAcc.add("Id",document.getElementById("PaymentAccountId").value);
+                            plPayAcc.add("Reference",document.getElementById("PaymentAccountReference").value);
+                        plDes.add("PaymentAccount",plPayAcc);
+                    }
+                    if (document.getElementById("PaymentAgentId").value != "")
+                    {
+                        // SOAPアクションのパラメータ設定(支払業者設定)
+                            var plPayAg = new SOAPClientParameters();
+                            plPayAg.add("Id",document.getElementById("PaymentAgentId").value);
+                        plDes.add("PaymentAgent",plPayAg);
+                    }
+                    if (document.getElementById("PaymentAgentBranchId").value != "")
+                    {
+                        // SOAPアクションのパラメータ設定(支払業者支店情報設定)
+                            var plPayBranch = new SOAPClientParameters();
+                            plPayBranch.add("Id",document.getElementById("PaymentAgentBranchId").value);
+                        plDes.add("PaymentBranch",plPayBranch);
+                    }
+
+                    // SOAPアクションのパラメータ設定(支払業者City情報設定)
+                        var plPayCity = new SOAPClientParameters();
+                        plPayCity.add("CityId","*****");
+                    plDes.add("PaymentCity",plPayCity);
+
+                    if (document.getElementById("PaymentCurrencyId").value != "")
+                    {
+                        // SOAPアクションのパラメータ設定(支払通貨情報設定)
+                            var plPayCurr = new SOAPClientParameters();
+                            plPayCurr.add("Id",document.getElementById("PaymentCurrencyId").value);
+                        plDes.add("PaymentCurrency",plPayCurr);
+                    }
+                    if (document.getElementById("PaymentTypeId").value != "") plDes.add("PaymentTypeId",document.getElementById("PaymentTypeId").value);
+                      // SOAPアクションのパラメータ設定(受取人情報設定)
+                        var plRec = new SOAPClientParameters();
+                        if (document.getElementById("RecAddress1").value != "") plRec.add("Address1",document.getElementById("RecAddress1").value);
+                        if (document.getElementById("RecBirthday").value != "") plRec.add("Birthday",document.getElementById("RecBirthday").value);
+                        if (document.getElementById("RecCityId").value != "")
+                        {
+                            // SOAPアクションのパラメータ設定(都市情報設定)
+                                var plRecCity = new SOAPClientParameters();
+                                plRecCity.add("CityId",document.getElementById("RecCityId").value);
+                            plRec.add("City",plRecCity);
+                        }
+                        if (document.getElementById("RecDocumentNumber").value != "") plRec.add("DocumentNumber",document.getElementById("RecDocumentNumber").value);
+                        if (document.getElementById("RecDocumentType").value != "") plRec.add("DocumentType",document.getElementById("RecDocumentType").value);
+                        if (document.getElementById("RecFamilySecondName").value != "") plRec.add("FamilySecondName",document.getElementById("RecFamilySecondName").value);
+                        if (document.getElementById("RecFirstName").value != "") plRec.add("FirstName",document.getElementById("RecFirstName").value);
+                        if (document.getElementById("RecId").value != "") plRec.add("ID",document.getElementById("RecId").value);
+                        if (document.getElementById("RecLastName").value != "") plRec.add("LastName",document.getElementById("RecLastName").value);
+                        if (document.getElementById("RecMiddleName").value != "") plRec.add("MiddleName",document.getElementById("RecMiddleName").value);
+                        if (document.getElementById("RecPhone").value != "") plRec.add("Phone",document.getElementById("RecPhone").value);
+                        if (document.getElementById("RecAgentId").value != "") plRec.add("AgentId",document.getElementById("RecAgentId").value);
+                        if (document.getElementById("RecExternalId").value != "") plRec.add("ExternalId",document.getElementById("RecExternalId").value);
+                        if (document.getElementById("RecZipCode").value != "") plRec.add("ZipCode",document.getElementById("RecZipCode").value);
+                    plDes.add("Recipient",plRec);
+                    if (document.getElementById("RemittanceCurrencyId").value != "")
+                    {
+                        // SOAPアクションのパラメータ設定(送金通貨情報設定)
+                            var plRemCurr = new SOAPClientParameters();
+                            plRemCurr.add("Id",document.getElementById("RemittanceCurrencyId").value);
+                        plDes.add("RemittanceCurrency",plRemCurr);
+                    }
+                    // SOAPアクションのパラメータ設定(送金者情報設定)
+                        var plRem = new SOAPClientParameters();
+                        if (document.getElementById("RemAddress1").value != "") plRem.add("Address1",document.getElementById("RemAddress1").value);
+                        if (document.getElementById("RemBirthday").value != "") plRem.add("Birthday",document.getElementById("RemBirthday").value);
+                        if (document.getElementById("RemCityId").value != "")
+                        {
+                            // SOAPアクションのパラメータ設定(都市情報設定)
+                                var plRemCity = new SOAPClientParameters();
+                                plRemCity.add("CityId",document.getElementById("RemCityId").value);
+                            plRem.add("City",plRemCity);
+                        }
+                        if (document.getElementById("RemDocumentName").value != "") plRem.add("DocumentName",document.getElementById("RemDocumentName").value);
+                        if (document.getElementById("RemDocumentNumber").value != "") plRem.add("DocumentNumber",document.getElementById("RemDocumentNumber").value);
+                        if (document.getElementById("RemDocumentType").value != "") plRem.add("DocumentType",document.getElementById("RemDocumentType").value);
+                        if (document.getElementById("RemFamilySecondName").value != "") plRem.add("FamilySecondName",document.getElementById("RemFamilySecondName").value);
+                        if (document.getElementById("RemFirstName").value != "") plRem.add("FirstName",document.getElementById("RemFirstName").value);
+                        if (document.getElementById("RemId").value != "") plRem.add("ID",document.getElementById("RemId").value);
+                        if (document.getElementById("RemLastName").value != "") plRem.add("LastName",document.getElementById("RemLastName").value);
+                        if (document.getElementById("RemMiddleName").value != "") plRem.add("MiddleName",document.getElementById("RemMiddleName").value);
+                        if (document.getElementById("RemPhone").value != "") plRem.add("Phone",document.getElementById("RemPhone").value);
+                        if (document.getElementById("RemAgentId").value != "") plRem.add("AgentId",document.getElementById("RemAgentId").value);
+                        if (document.getElementById("RemBranchId").value != "") plRem.add("BranchId",document.getElementById("RemBranchId").value);
+                        if (document.getElementById("RemCardNumber").value != "") plRem.add("CardNumber",document.getElementById("RemCardNumber").value);
+                        if (document.getElementById("RemCardType").value != "") plRem.add("CardType",document.getElementById("RemCardType").value);
+                        if (document.getElementById("RemExternalId").value != "") plRem.add("ExternalId",document.getElementById("RemExternalId").value);
+                        if (document.getElementById("RemOccupation").value != "") plRem.add("Occupation",document.getElementById("RemOccupation").value);
+                        if (document.getElementById("RemSecondaryDocumentNumber").value != "") plRem.add("SecondaryDocumentNumber",document.getElementById("RemSecondaryDocumentNumber").value);
+                        if (document.getElementById("RemSecondaryDocumentType").value != "") plRem.add("SecondaryDocumentType",document.getElementById("RemSecondaryDocumentType").value);
+                        if (document.getElementById("RemZipCode").value != "") plRem.add("ZipCode",document.getElementById("RemZipCode").value);
+                    plDes.add("Remitter",plRem);
+                    if (document.getElementById("Comment").value != "") plDes.add("Comment",document.getElementById("Comment").value);
+                    if (document.getElementById("CountryPaymentCode").value != "") plDes.add("CountryPaymentCode",document.getElementById("CountryPaymentCode").value);
+                    if (document.getElementById("InputAmount").value != "") plDes.add("InputAmount",document.getElementById("InputAmount").value);
+                    if (document.getElementById("InputChannelId").value != "") plDes.add("InputChannelId",document.getElementById("InputChannelId").value);
+                    // 初期値設定(InputExchangeRate)
+                    plDes.add("InputExchangeRate","");
+                    if (document.getElementById("OutputAmount").value != "") plDes.add("OutputAmount",document.getElementById("OutputAmount").value);
+                    if (document.getElementById("OutputChannelId").value != "") plDes.add("OutputChannelId",document.getElementById("OutputChannelId").value);
+                    if (document.getElementById("RemittanceOriginatorCode").value != "") plDes.add("RemittanceOriginatorCode",document.getElementById("RemittanceOriginatorCode").value);
+                    if (document.getElementById("RemittanceTypeId").value != "") plDes.add("RemittanceTypeId",document.getElementById("RemittanceTypeId").value);
+                    plDes.add("Ticket",ticket);
+                pl.add("destination", plDes);
+                if (document.getElementById("InputAmount").value != "") pl.add("amount",document.getElementById("InputAmount").value);
+                if (document.getElementById("OriginatorId").value != "") pl.add("originatorCode",document.getElementById("OriginatorId").value);
+                if (document.getElementById("InputChannelId").value != "") pl.add("originatorChannelCode",document.getElementById("InputChannelId").value);
+                if (document.getElementById("RemittanceTypeId").value != "") pl.add("paymentTypeId",document.getElementById("RemittanceTypeId").value);
+                pl.add("session", plSes);
+                try
+                {
+                    var costs = SOAPClient.invoke(wsdlurl, endpointurl, soapaction, pl, false);
+                }
+                catch(e)
+                {
+                    alert("CalculateRemittanceCosts failure");
+                    throw e;
+                }
+                plDes.add("InputExchangeRate","0.01647059");
+                //plDes.remove("Remitter");
+                //plDes.add("InputAmount","aaaaa");
+                
+                // debug
+                //resAlert(costs);
+                alert("RemittanceExchangeRate = " + costs.InputRemittanceExchangeRate);
+
+                // 実行するSOAPアクション
+                soapaction = "http://*****/ws/IBliRemittanceCore/CreateAndGetRemittance";
+                // SOAPアクションのパラメータ設定
+                pl = new SOAPClientParameters();
+                // SOAPアクションのパラメータ設定(RemittanceTransaction設定)
+                pl.add("destination", plDes);
+                // SOAPアクションのパラメータ設定(createRemitterAndBeneficiary設定)
+                if (document.getElementById("RemId").value != "")
+                {
+                    pl.add("createRemitterAndBeneficiary", false);
+                }
+                else
+                {
+                    pl.add("createRemitterAndBeneficiary", true);
+                }
+                // SOAPアクションのパラメータ設定(session設定)
+                pl.add("session", plSes);
+
+                // 非同期処理でSOAPクライアント起動
+                try
+                {
+                    if (document.getElementById("soaprequest") != null)
+                    {
+                        $('#soaprequest').remove();
+                    }
+                    if (document.getElementById("soapresponse") != null)
+                    {
+                        $('#soapresponse').remove();
+                    }
+                    //SOAPClient.invoke(wsdlurl, endpointurl, soapaction, pl, true, CreateAndGetRemittance_callBack);
+                    // debug
+                    var requestMessage = SOAPClient.invoke(wsdlurl, endpointurl, soapaction, pl, true, CreateAndGetRemittance_callBack);
+                    requestMessage = requestMessage.replace(new RegExp(">","g"),">\r\n");
+                    requestMessage = requestMessage.replace(new RegExp("</","g"),"\r\n</");
+                    requestMessage = requestMessage.replace(new RegExp(">\r\n\r\n</","g"),">\r\n</");
+                    //alert("requestMessage =" + requestMessage);
+                    jQuery('<div>', { id:'soaprequest'}).appendTo( '#inputform' );
+                    jQuery('<label>', { html: 'SOAP REQUEST MESSAGE'}).appendTo( '#soaprequest' );
+                    jQuery('<br>').appendTo( '#soaprequest' );
+                    jQuery('<textarea>', { id:'requestMessage',cols: '100', rows:'10', value: requestMessage}).appendTo( '#soaprequest' );
+
+                    fileOutPut("C:/*****/SoapRequest.xml",requestMessage);
+                }
+                catch(e)
+                {
+                    alert("CreateAndGetRemittance failure");
+                    //clearInterval(timeID);
+                    //document.getElementById("progress").style.display = "none";
+                    throw e;
+                }
+           }
+           catch(e)
+           {
+               alert("<ERROR Message>\n" + e.message);
+           }
+	}
+	function CreateAndGetRemittance_callBack(r,soapresponse)
+	{
+
+            //clearInterval(timeID);
+            //document.getElementById("progress").style.display = "none";
+
+            //alert(soapResponse.xml);
+            if (r instanceof Error)
+            {
+                alert(r.message);
+            }
+            else if(r == null || r.TrnId == null)
+            {
+		alert("CreateAndGetRemittance failure");
+            }
+            else
+            {
+                  // debug
+                  //resAlert(r);
+                  //alert("paymentTypeId = " + r.PaymentTypeId);
+                /*var tb1 = document.getElementById("table1");
+                var rows = tb1.rows;
+                //alert(rows.length);
+                for (var i = 1; i < rows.length; i++) {
+                    tb1.deleteRow(i);
+                }
+                var row = tb1.insertRow(1);
+                row.insertCell(0).innerHTML = r.TrnId;
+                row.insertCell(1).innerHTML = r.TransactionDate;
+                row.insertCell(2).innerHTML = r.Remitter.FirstName + " " + r.Remitter.LastName;
+                row.insertCell(3).innerHTML = r.Recipient.FirstName + " " + r.Recipient.LastName;
+
+                tb1.style.display = "block";*/
+            }
+            // debug
+            if (soapresponse != null)
+            {
+                if (document.getElementById("soapresponse") != null)
+                {
+                    $('#soapresponse').remove();
+                }
+                var responseMessage = soapresponse;
+                responseMessage = responseMessage.replace(new RegExp(">","g"),">\r\n");
+                responseMessage = responseMessage.replace(new RegExp("</","g"),"\r\n</");
+                responseMessage = responseMessage.replace(new RegExp(">\r\n\r\n</","g"),">\r\n</");
+                //alert("soapresponse =" + soapresponse);
+                jQuery('<div>', { id:'soapresponse'}).appendTo( '#inputform' );
+                jQuery('<label>', { html: 'SOAP RESPONSE MESSAGE'}).appendTo( '#soapresponse' );
+                jQuery('<br>').appendTo( '#soapresponse' );
+                jQuery('<textarea>', { id:'responseMessage',cols: '100', rows:'10', value: responseMessage}).appendTo( '#soapresponse' );
+
+                fileOutPut("C:/*****/SoapResponse.xml",responseMessage);
+            }
+	}
+        
+        // 進捗表示
+        /*function progress(id)
+        {
+                var progress = document.getElementById(id);
+                if (progress.style.display == "none")
+                {
+                    progress.style.display = "block";
+                }
+                progress.innerHTML = progress.innerHTML + " *";
+        }*/
+        // debug用
+        function resAlert(res)
+        {
+           for (var i in res)
+           {
+                //alert("OperationParamsName:" + i);
+                //alert("OperationParamsValue:" + operationParams[i]);
+                if (res[i] instanceof Object)
+                {
+                    resAlert(res[i]);
+                }
+                else
+                {
+                    alert(i + "=" + res[i]);
+                }
+           }
+        }
+        function fileOutPut(fileNum, file)
+        {
+            var fso = new ActiveXObject("Scripting.FileSystemObject");
+            // 書き込みモード(追記なし)でファイル作成
+            TFile = fso.OpenTextFile(fileNum,2,true);
+
+            TFile.Write(file);
+            TFile.Close();
+        }
+	</script>
+  </head>
+  <body>
+      <form id="inputform" name="inputform" action="">
+          <table>
+              <col style="width:480px;"><col style="width:20px;"><col style="width:480px;">
+              <tr>
+                  <td>
+                      <fieldset>
+                          <legend>送金者</legend>
+                          <table>
+                            <col style="width:200px;"><col style="width:280px;">
+                            <tr>
+                                <td>送金者ID</td>
+                                <td><input type="text" id="RemId" value="" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>送金業者ID</td>
+                                <td><input type="text" id="RemAgentId" value="" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>誕生日(※)</td>
+                                <td><input type="text" id="RemBirthday" value="2007-11-21" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>送金業者支店ID</td>
+                                <td><input type="text" id="RemBranchId" value="" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>送金者カード番号</td>
+                                <td><input type="text" id="RemCardNumber" value="" size="16" /></td>
+                            </tr>
+                            <tr>
+                                <td>送金者カード種別</td>
+                                <td><input type="text" id="RemCardType" value="" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>CityID(※) : </td>
+                                <td><input type="text" id="RemCityId" value="JP01101" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>確認書類名称</td>
+                                <td><input type="text" id="RemDocumentName" value="" size="35" /></td>
+                            </tr>
+                            <tr>
+                                <td>確認書類番号</td>
+                                <td><input type="text" id="RemDocumentNumber" value="" size="30" /></td>
+                            </tr>
+                            <tr>
+                                <td>確認書類タイプ</td>
+                                <td><input type="text" id="RemDocumentType" value="" size="20" /></td>
+                            </tr>
+                            <tr>
+                                <td>第二確認書類番号</td>
+                                <td><input type="text" id="RemSecondaryDocumentNumber" value="" size="35" /></td>
+                            </tr>
+                            <tr>
+                                <td>第二確認書類タイプ</td>
+                                <td><input type="text" id="RemSecondaryDocumentType" value="" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>外部ID</td>
+                                <td><input type="text" id="RemExternalId" value="" size="35" /></td>
+                            </tr>
+                            <tr>
+                                <td>名(※)</td>
+                                <td><input type="text" id="RemFirstName" value="TESTREMIHISAYUKI" size="35" /></td>
+                            </tr>
+                            <tr>
+                                <td>ミドルネーム</td>
+                                <td><input type="text" id="RemMiddleName" value="" size="1" /></td>
+                            </tr>
+                            <tr>
+                                <td>姓(※)</td>
+                                <td><input type="text" id="RemLastName" value="TESTREMUEHARA" size="16" /></td>
+                            </tr>
+                            <tr>
+                                <td>姓(2番目)</td>
+                                <td><input type="text" id="RemFamilySecondName" value="" size="16" /></td>
+                            </tr>
+                            <tr>
+                                <td>職業</td>
+                                <td><input type="text" id="RemOccupation" value="SE" size="35" /></td>
+                            </tr>
+                            <tr>
+                                <td>電話番号(※)</td>
+                                <td><input type="text" id="RemPhone" value="555-555-5555" size="12" /></td>
+                            </tr>
+                            <tr>
+                                <td>郵便番号(※)</td>
+                                <td><input type="text" id="RemZipCode" value="55555" size="5" /></td>
+                            </tr>
+                            <tr>
+                                <td>住所(※)</td>
+                                <td><textarea id="RemAddress1" cols="35" rows="7">TESTSHI TESTKEN JAPAN</textarea></td>
+                            </tr>
+                          </table>
+                      </fieldset>
+                  </td>
+                  <td><table><tr><td>&nbsp;</td></tr></table></td>
+                  <td  Valign="top">
+                      <fieldset>
+                          <legend>受取人</legend>
+                          <table>
+                            <col style="width:200px;"><col style="width:280px;">
+                            <tr>
+                                <td>受取人ID</td>
+                                <td><input type="text" id="RecId" value="" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>送金業者ID(※)</td>
+                                <td><input type="text" id="RecAgentId" value="3" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>誕生日(※)</td>
+                                <td><input type="text" id="RecBirthday" value="2007-11-21" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>CityID(※)</td>
+                                <td><input type="text" id="RecCityId" value="0001" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>確認書類番号</td>
+                                <td><input type="text" id="RecDocumentNumber" value="" size="35" /></td>
+                            </tr>
+                            <tr>
+                                <td>確認書類タイプ</td>
+                                <td><input type="text" id="RecDocumentType" value="" size="10" /></td>
+                            </tr>
+                            <tr>
+                                <td>外部ID</td>
+                                <td><input type="text" id="RecExternalId" value="" size="35" /></td>
+                            </tr>
+                            <tr>
+                                <td>名(※)</td>
+                                <td><input type="text" id="RecFirstName" value="TESTRECHISAYUKI" size="32" /></td>
+                            </tr>
+                            <tr>
+                                <td>ミドルネーム</td>
+                                <td><input type="text" id="RecMiddleName" value="" size="32" /></td>
+                            </tr>
+                            <tr>
+                                <td>姓(※)</td>
+                                <td><input type="text" id="RecLastName" value="TESTRECUEHARA" size="32" /></td>
+                            </tr>
+                            <tr>
+                                <td>姓(2番目)</td>
+                                <td><input type="text" id="RecFamilySecondName" value="" size="32" /></td>
+                            </tr>
+                            <tr>
+                                <td>電話番号</td>
+                                <td><input type="text" id="RecPhone" value="" size="30" /></td>
+                            </tr>
+                            <tr>
+                                <td>郵便番号</td>
+                                <td><input type="text" id="RecZipCode" value="" size="16" /></td>
+                            </tr>
+                            <tr>
+                                <td>住所(※)</td>
+                                <td><textarea id="RecAddress1" cols="35" rows="7">ERUTFGGU LATACUNGA COTOPAXI ECUADOR</textarea></td>
+                            </tr>
+                          </table>
+                      </fieldset>
+                  </td>
+              </tr>
+          </table>
+          <table>
+              <col style="width:980px;">
+              <tr>
+                  <td>
+                  <fieldset>
+                      <legend>送金情報</legend>
+                      <table>
+                        <col style="width:200px;"><col style="width:280px;"><col style="width:20px;"><col style="width:200px;"><col style="width:280px;">
+                        <tr>
+                            <td>送金業者支店ID</td>
+                            <td><input type="text" id="OriBranchId" value="" size="10" /></td>
+                            <td>&nbsp;</td>
+                            <td>送金業者コード</td>
+                            <td><input type="text" id="RemittanceOriginatorCode" value="" size="10" /></td>
+                        </tr>
+                        <tr>
+                            <td>送金業者ID</td>
+                            <td><input type="text" id="OriginatorId" value="3" size="10" /></td>
+                            <td>&nbsp;</td>
+                            <td>送金チャネルID(※)</td>
+                            <td><input type="text" id="InputChannelId" value="WS"/></td>
+                        </tr>
+                        <tr>
+                            <td>送金通貨ID(※)</td>
+                            <td><input type="text" id="RemittanceCurrencyId" value="JPY" size="10" /></td>
+                            <td>&nbsp;</td>
+                            <td>送金タイプID(※)</td>
+                            <td><input type="text" id="RemittanceTypeId" value="CASH" size="10" /></td>
+                        </tr>
+                        <tr>
+                            <td>送金額(※)</td>
+                            <td><input type="text" id="InputAmount" value="1000" size="20" /></td>
+                        </tr>
+                        <tr>
+                            <td>送金理由</td>
+                            <td colspan="4"><textarea id="Comment" cols="75" rows="3"></textarea></td>
+                        </tr>
+                      </table>
+                  </fieldset>
+                  </td>
+              </tr>
+              <tr>
+                  <td>
+                  <fieldset>
+                      <legend>支払情報</legend>
+                      <table>
+                        <col style="width:200px;"><col style="width:280px;"><col style="width:20px;"><col style="width:200px;"><col style="width:280px;">
+                        <tr>
+                            <td>支払業者支店ID</td>
+                            <td><input type="text" id="PaymentAgentBranchId" value="" size="10" /></td>
+                            <td>&nbsp;</td>
+                            <td>支払国コード</td>
+                            <td><input type="text" id="CountryPaymentCode" value="" size="10" /></td>
+                        </tr>
+                        <tr>
+                            <td>支払業者ID(※)</td>
+                            <td><input type="text" id="PaymentAgentId" value="7" size="10" /></td>
+                            <td>&nbsp;</td>
+                            <td>支払チャネルID(※)</td>
+                            <td><input type="text" id="OutputChannelId" value="WEB" size="10" /></td>
+                        </tr>
+                        <tr>
+                            <td>受取通貨ID(※)</td>
+                            <td><input type="text" id="PaymentCurrencyId" value="BRL" size="10" /></td>
+                            <td>&nbsp;</td>
+                            <td>支払タイプID(※)</td>
+                            <td> <input type="text" id="PaymentTypeId" value="CASH" size="10" /></td>
+                        </tr>
+                        <tr>
+                            <td>受取額(※)</td>
+                            <td><input type="text" id="OutputAmount" value="16.47" size="20" /></td>
+                            <td>&nbsp;</td>
+
+                        </tr>
+                        </table>
+                        <fieldset>
+                            <legend>口座振替の場合のみ入力</legend>
+                                <table>
+                                    <col style="width:200px;"><col style="width:280px;"><col style="width:20px;"><col style="width:200px;"><col style="width:280px;">
+                                    <tr><td colspan="5"></td></tr>
+                                    <tr>
+                                        <td>仲介業者コード</td>
+                                        <td><input type="text" id="IntPaymentAgentCode" value="" size="10" /></td>
+                                        <td>&nbsp;</td>
+                                        <td>仲介業者支払タイプ</td>
+                                        <td><input type="text" id="IntPaymentAgentType" value=" " size="10" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td>受取人口座支払業者ID</td>
+                                        <td><input type="text" id="PaymentAccountId" value="" size="10" /></td>
+                                        <td>&nbsp;</td>
+                                        <td>受取人口座番号</td>
+                                        <td><input type="text" id="PaymentAccountReference" value="" size="30" /></td>
+                                    </tr>
+                                </table>
+                        </fieldset>
+                  </fieldset>
+                  </td>
+              </tr>
+          </table>
+          <input type="button" value="CreateAndGetRemittance" onclick="CreateAndGetRemittance();" /><br>
+      </form>
+  </body>
+</html>
