@@ -1,0 +1,80 @@
+@CHARSET "utf-8";
+/*---------------------------------------------------------------------
+ * Table styles 
+ *
+ * 使い方
+ * <table class="listing">～</table>(jsソートなし)		→table.css参照
+ * <table class="sort_listing">～</table>(jsソートあり)	→table.css参照
+ * <table class="editor">～</table>(入力フォームゆとり配置用)
+ * <table class="editor-nb">～</table>(入力フォームゆとり配置枠線なし用)
+ * <table class="viewer">～</table>(表示フォームゆとり配置用)
+ * <table class="viewer-nb">～</table>(表示フォームゆとり配置枠線なし用)
+ *
+ * タイトルカラムには<th>タイトル</th>
+ * データカラムには<td>データ</td>
+ *---------------------------------------------------------------------*/
+
+/*-----------------------------------
+ * 編集フォーム整列用テーブル全体
+ * フォーム表示整列用テーブル全体
+*-----------------------------------*/
+.editor, .viewer {
+	border-collapse: collapse;
+	border-left: 1px solid #cfcfcf;
+	border-bottom: 1px solid #cfcfcf;
+	margin: 5px auto;
+	/*font-size: 85%;*/
+	text-align: justify;
+	line-height:1.2;
+}
+
+.editor th, .viewer th {
+	border-top: 1px solid #cfcfcf;
+	border-bottom: 1px solid #cfcfcf;
+	border-right: 1px solid #cfcfcf;
+	background-color: #efefef;
+	font-weight: normal;
+	padding: 2px 2px 2px 6px;
+}
+
+.editor td, .viewer td {
+	border: 1px solid #cfcfcf;
+	padding: 2px 6px 2px 2px;
+	background-color: #fff;
+}
+/*-----------------------------------
+ * 編集フォーム整列用テーブル全体
+ * フォーム表示整列用テーブル全体
+*-----------------------------------*/
+.editor-nb, .viewer-nb {
+	border-collapse: collapse;
+	margin: 0 auto;
+	/*font-size: 85%;*/
+	background-color: #fff;
+	text-align: justify;
+	line-height:1.2;
+}
+
+.editor-nb th, .viewer-nb th {
+	padding: 2px 2px 2px 6px;
+}
+.editor-nb td, .viewer-nb td {
+	padding: 2px 6px 2px 2px;
+	background-color: #fff;
+}
+
+/*-----------------------------------
+ * グループ分け、タイトル他
+ *-----------------------------------*/
+
+fieldset {
+	margin: 0 auto 5px auto;
+
+}
+legend, h3 {
+	margin-left: 0;
+	padding-left:24px;
+	background:transparent url(../images/work/marine.png) no-repeat;
+	font-weight: bold;
+	color: #00A7CF;
+}

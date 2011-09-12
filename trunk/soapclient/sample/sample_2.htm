@@ -1,0 +1,196 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <title>JavaScript SOAP Client - DEMOS | GURU4.net</title>
+	<style type="text/css">
+		div.h { display: none; }
+		div.s { display: block; margin: 10px; }
+	</style>
+        <!--<link rel="stylesheet" type="text/css" href="css/common.css">
+        <link rel="stylesheet" type="text/css" href="css/table.css">
+        <link rel="stylesheet" type="text/css" href="css/form_table.css">-->
+        <link href="tablesorter/blue/style.css" rel="stylesheet" type="text/css" />
+        <script tyepe="text/javascript" src="tablesorter/jquery.tablesorter.min.js"></script>
+        <script type="text/javascript" src="jquery-1.4.4.min.js"></script>
+	<script type="text/javascript" src="soapclient.js"></script>
+	<script type="text/javascript">
+        $(function()
+        {
+            $("table1").tablesorter();
+        })
+        var progressStr = "検索処理中です。しばらくお待ちください";
+        var timeID = 0;
+        // GetTransaction
+	function GetTransaction()
+	{
+                // 進捗表示
+                document.getElementById("progress").innerHTML = progressStr;
+                timeID = setInterval("progress(\"progress\")", 100);
+
+                // 同期処理でInitializeServiceを実行し、session情報取得
+                var wsdlurl = "http://*****/RemittanceService/Arias.Jp.Api.Remittance.svc?wsdl";
+                var endpointurl = "http://*****/RemittanceService/Arias.Jp.Api.Remittance.svc/basic";
+                var soapaction = "http://*****/ws/IRemittance/InitializeService";
+		var pl = new SOAPClientParameters();
+                pl.add("key", "*****");
+		var session = SOAPClient.invoke(wsdlurl, endpointurl, soapaction, pl, false);
+
+                // 実行するSOAPアクション
+                soapaction = "http://*****/ws/IBliRemittanceCore/GetTransaction";
+                // SOAPアクションのパラメータ設定
+                pl = new SOAPClientParameters();
+                pl.add("transactionId", document.getElementById("transactionId").value);
+                // SOAPアクションのパラメータ設定(session設定)
+                // オブジェクトを設定する場合、以下のように記述
+                var plSes = new SOAPClientParameters();
+                plSes.add("Channel",session.CurrentSession.Channel);
+                plSes.add("ExternalApplicationId",session.CurrentSession.ExternalApplicationId);
+                plSes.add("ExternalUserId",session.CurrentSession.ExternalUserId);
+                plSes.add("MembershipObtained",session.CurrentSession.MembershipObtained);
+                plSes.add("PrincipalClient",session.CurrentSession.PrincipalClient);
+                plSes.add("PrincipalClientName",session.CurrentSession.PrincipalClientName);
+                plSes.add("PrincipalLogin",session.CurrentSession.PrincipalLogin);
+                plSes.add("PrincipalProfile",session.CurrentSession.PrincipalProfile);
+                plSes.add("Service",session.CurrentSession.Service);
+                plSes.add("SessionId",session.CurrentSession.SessionId);
+                pl.add("session", plSes);
+                // 非同期処理でSOAPクライアント起動
+                try
+                {
+                    SOAPClient.invoke(wsdlurl, endpointurl, soapaction, pl, true, GetTransaction_callBack);
+                }
+                catch(e)
+                {
+                    alert("An error has occured!");
+                    clearInterval(timeID);
+                    document.getElementById("progress").style.display = "none";
+                }
+	}
+	function GetTransaction_callBack(r)
+	{
+
+            clearInterval(timeID);
+            document.getElementById("progress").style.display = "none";
+
+            //alert(soapResponse.xml);
+            if (r instanceof Error)
+            {
+                alert(r.message);
+            }
+            else if(r == null)
+            {
+		alert("Transaction not found.");
+            }
+            else
+            {
+
+                var tb1 = document.getElementById("table1");
+                var rows = tb1.rows;
+                //alert(rows.length);
+                for (var i = 1; i < rows.length; i++) {
+                    tb1.deleteRow(i);
+                }
+                var row = tb1.insertRow(1);
+                row.insertCell(0).innerHTML = r.TrnId;
+                row.insertCell(1).innerHTML = r.TransactionDate;
+                row.insertCell(2).innerHTML = r.Remitter.FirstName + " " + r.Remitter.LastName;
+                row.insertCell(3).innerHTML = r.Recipient.FirstName + " " + r.Recipient.LastName;
+
+                tb1.style.display = "block";
+            }
+	}
+
+        //
+
+	// utils
+	function toggle(id) 
+	{
+		var d = document.getElementById(id);
+		if(d != null)
+			d.className = (d.className == "h") ? "s" : "h"; 
+	}
+        // 進捗表示
+        function progress(id)
+        {
+                var progress = document.getElementById(id);
+                if (progress.style.display == "none")
+                {
+                    progress.style.display = "block";
+                }
+                progress.innerHTML = progress.innerHTML + " *";
+        }
+
+	</script>
+</head>
+<body>
+    <form id="frmDemo" name="frmDemo" action="" method="post">
+    <div>
+        <h2>DEMO 1: "GetTransaction"</h2>
+        <p>The simplest example you can imagine (but maybe not the most fanciful...):</p>
+        送金ID : <input id="transactionId" type="text" value="*****"/>&nbsp;&nbsp;<input type="button" value="Say &quot;GetTransaction&quot;" onclick="GetTransaction();" />
+        <div id="progress" style="display:none"></div>
+        <!--table id="table1" border="1" style="display:none"-->
+        <table id="table1" border="1" style="display:none" class="tablesorter">
+            <tr>
+                <th>送金ID</th><th>送金日</th><th>依頼人</th><th>受取人</th>
+            </tr>
+        </table>
+        <p><b>&nbsp;&#187;&nbsp;</b><a href="javascript:toggle('demo1');">Show / hide sample source code</a></p>
+        <div id="demo1" class="h">
+			<fieldset>
+				<legend>Client (javascript)</legend>
+				<kbd>
+					function GetTransaction()<br />
+					{<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;// 同期処理でInitializeServiceを実行し、session情報取得<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;var wsdlurl = &quot;http://*****/RemittanceService/Arias.Jp.Api.Remittance.svc?wsdl&quot;;<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;var endpointurl = &quot;http://*****/RemittanceService/Arias.Jp.Api.Remittance.svc/basic&quot;;<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;var soapaction = &quot;http://*****/ws/IRemittance/InitializeService&quot;;<br />
+		                        &nbsp;&nbsp;&nbsp;&nbsp;var pl = new SOAPClientParameters();<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;pl.add(&quot;key&quot;, &quot;*****&quot;);<br />
+		                        &nbsp;&nbsp;&nbsp;&nbsp;var session = SOAPClient.invoke(wsdlurl, endpointurl, soapaction, pl, false);<br />
+                                        <br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;// 実行するSOAPアクション<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;soapaction = &quot;http://*****/ws/IBliRemittanceCore/GetTransaction&quot;;<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;// SOAPアクションのパラメータ設定<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;pl = new SOAPClientParameters();<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;pl.add(&quot;transactionId&quot;, &quot;*****&quot;);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;// SOAPアクションのパラメータ設定(session設定)<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;// オブジェクトを設定する場合、以下のように記述<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;var plSes = new SOAPClientParameters();<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;plSes.add(&quot;Channel&quot;,session.CurrentSession.Channel);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;plSes.add(&quot;ExternalApplicationId&quot;,session.CurrentSession.ExternalApplicationId);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;plSes.add(&quot;ExternalUserId&quot;,session.CurrentSession.ExternalUserId);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;plSes.add(&quot;MembershipObtained&quot;,session.CurrentSession.MembershipObtained);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;plSes.add(&quot;PrincipalClient&quot;,session.CurrentSession.PrincipalClient);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;plSes.add(&quot;PrincipalClientName&quot;,session.CurrentSession.PrincipalClientName);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;plSes.add(&quot;PrincipalLogin&quot;,session.CurrentSession.PrincipalLogin);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;plSes.add(&quot;PrincipalProfile&quot;,session.CurrentSession.PrincipalProfile);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;plSes.add(&quot;Service&quot;,session.CurrentSession.Service);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;plSes.add(&quot;SessionId&quot;,session.CurrentSession.SessionId);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;pl.add(&quot;session&quot;, plSes);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;// 非同期処理でSOAPクライアント起動<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;SOAPClient.invoke(wsdlurl, endpointurl, soapaction, pl, true, GetTransaction_callBack);<br />
+					}<br />
+					function GetTransaction_callBack(r,soapResponse)<br />
+					{<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;alert(soapResponse.xml);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;if(r == null)<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;{<br />
+		                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert(&quot;No transaction found.&quot;);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;}<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;else<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;{<br />
+		                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;alert(&quot;Remitter.FirstName: &quot; + r.Remitter.FirstName);<br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;}<br />
+					}
+				</kbd>
+			</fieldset>
+        </div>
+    </div>
+    </form>
+</body>
+</html>

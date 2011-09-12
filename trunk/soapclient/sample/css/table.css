@@ -1,0 +1,150 @@
+@CHARSET "utf-8";
+/*---------------------------------------------------------------------
+ * Table styles 
+ *
+ * 使い方
+ * <table class="listing">～</table>(jsソートなし)
+ * <table class="sort-listing">～</table>(jsソートあり←今回は使用しない)
+ *
+ * タイトルカラムには<th>タイトル</th>
+ * データカラムには<td>データ</td>
+ *
+ * カラム内の余白を少なくするには
+ * <table class="listing narrow">～</table>(左右の余白が狭く)
+ * <table class="listing short">～</table>(上下の余白が狭く)
+ * <table class="listing narrow short">～</table>(上下左右の余白が狭く)
+ *---------------------------------------------------------------------*/
+/* 偶数行 */
+.even, .even td {
+	background-color: #f9f9f9;
+}
+
+/* 奇数行 */
+.odd, .odd td {
+	background-color: #fff;
+}
+
+/* エラー発生行 */
+.err, .err td {
+	background-color: #FFCCCC;
+}
+/*-----------------------------------
+ * ページ遷移用
+ *-----------------------------------*/
+.listNav {
+	margin:10px auto 5px auto;
+	text-align:center;
+}
+.listNav a {
+	padding: 2px;
+	color: #09c;
+	border: 1px solid #eee;
+}
+.listNav a:hover {
+	background-color: #9cf;
+}
+.listNav span {
+	padding: 2px;
+	color: #ccc;
+	border: 1px solid #eee;
+	background-color: #efefef;
+}
+/* 現在ページ */
+.listNav .current {
+	font-weight:bold;
+	color: #333;
+	background-color: #fff;
+}
+/*-----------------------------------
+ * スクロール用(テーブルを囲むdiv要素に付与する)
+ *-----------------------------------*/
+.scroll {
+	margin:0 auto;
+	overflow: auto;
+	text-align:left; /* for ie */
+}
+.scroll-header {
+	margin:0 auto;
+	text-align:left; /* for ie */
+}
+/*super-tableライブラリ用 */
+.scroll-super-table {
+	margin:0 auto;
+	overflow: hidden;
+	text-align:left; /* for ie */
+
+}
+
+/*-----------------------------------
+ * テーブル全体
+ *-----------------------------------*/
+.listing, .sort-listing{
+	border-collapse: collapse;
+	border-left: 1px solid #cfcfcf;
+	border-bottom: 1px solid #cfcfcf;
+	margin:0;
+	/*margin: 1em auto 1em auto;*/
+	/*font-size: 85%;*/
+	text-align: justify;
+}
+/*-----------------------------------
+ * タイトルカラム
+ *-----------------------------------*/
+.listing th, .sort-listing th {
+	background: #efefef;
+	border-top: 1px solid #cfcfcf;
+	border-bottom: 1px solid #cfcfcf;
+	border-right: 1px solid #cfcfcf;
+	font-weight: normal;
+	/* padding: 0.25em 1em; */
+	padding: 4px 1px 4px 3px;
+	overflow:hidden;
+	text-align: center;
+	vertical-align: middle;
+}
+.listing .top, .sort-listing .top {
+	border-left: 1px solid White;
+	border-top: 1px solid White !important;
+	border-right: 1px solid White !important;
+	text-align: right ! important;
+	/* padding: 0 0 1em 0; */
+	padding: 4px 1px 4px 3px;
+	text-align: center;
+	vertical-align: middle;
+}
+/*-----------------------------------
+ * データカラム
+ *-----------------------------------*/
+.listing td, .sort-listing td {
+	border: 1px solid #cfcfcf;
+	/*padding: 0.25em 1em;*/
+	padding: 3px 1px 2px 3px;
+	overflow:hidden;
+	text-align: center;
+	vertical-align: middle;
+}
+
+/*-----------------------------------
+ * テーブル全体補正（listing、sort-listingと共に使用）
+ *-----------------------------------*/
+.narrow th, .narrow td{
+	padding-left:1px;
+	padding-right:1px;
+}
+.short th, .short td{
+	padding-top:1px;
+	padding-bottom:1px;
+}
+
+/*-----------------------------------
+ * 汎用テーブルリンク
+ *-----------------------------------*/
+.listing a, .sort-listing a {
+	text-decoration: none;
+}
+
+.listing a:hover, .sort-listing a:hover {
+	text-decoration: underline;
+	background-color: #cfcfcf;
+}
+

@@ -1,0 +1,241 @@
+@CHARSET "utf-8";
+/*---------------------------------------------------------------------
+ * Form styles 
+ *
+ * フォーム関連レイアウト
+ *---------------------------------------------------------------------*/
+/*---------------------------------------------------------------------
+ * 共通要素
+ *---------------------------------------------------------------------*/
+/*-----------------------------------
+ * 内部テキストの配置指定(td, th, input etc...)
+ * (上下寄せは効かない場合があります)
+ *-----------------------------------*/
+/* 右寄せ */
+.right, .listing td.right {
+	text-align: right;
+}
+/* 左寄せ */
+.left, .listing td.left {
+	text-align: left;
+}
+/* センタリング */
+.center, .listing td.center {
+	text-align: center;
+}
+/* 上寄せ */
+.top, .listing td.top {
+	vertical-align:top;
+}
+/* 下寄せ */
+.bottom, .listing td.bottom {
+	vertical-align:bottom;
+}
+/* 縦中央*/
+.middle, .listing td.middle {
+	vertical-align:middle;
+}
+/*-----------------------------------
+ * 内部テキストのサイズ
+ *-----------------------------------*/
+.txt-small {
+	font-size:12px;
+}
+
+.txt-upload {
+	font-size:35px;
+	color: #FA3DA9;
+	
+}
+
+/*-----------------------------------
+ * BOX要素本体の寄せ指定
+ *-----------------------------------*/
+/* 右寄せ */
+.fl-right {
+	float: right;
+}
+/* 左寄せ */
+.fl-left {
+	float: left;
+}
+/* センタリング */
+.fl-center {
+	margin-left: auto;
+	margin-right: auto;
+}
+/*---------------------------------------------------------------------
+ * INPUT他入力要素共通
+ *---------------------------------------------------------------------*/
+/* 金額(日本円)入力する箇所 (以下のime/上記のrightは使用しないでこれを使う) */
+.amt {
+	background: url(../images/amt_back.gif) repeat-y right;
+	text-align: right;
+	ime-mode:disabled;
+	border:1px solid #999;
+}
+/* ime入力不可 */
+.ime-off {
+	ime-mode:disabled;
+}
+/* ime入力 */
+.ime-on {
+	ime-mode:active;
+}
+
+/* readonly */
+.readonly {
+	border:1px solid #999;
+	background-color: #efefef;
+}
+
+/*開く＆閉じるリンク */
+a.iconClosed {
+	border: 0px;
+	/* background:transparent url(../images/closed.gif) no-repeat 2px 2px; */
+	background:transparent url(../images/expand.png) no-repeat 0 0;
+	padding-left: 20px;
+	height: 12px;
+	width: 12px;
+}
+
+a.iconOpen {
+	border: 0px;
+	/* background:transparent url(../images/open.gif) no-repeat 2px 2px; */
+	background:transparent url(../images/collapse.png) no-repeat 0 0;
+	padding-left: 20px;
+	height: 12px;
+	width: 12px;
+}
+
+a:hover.iconClosed, a:hover.iconOpen {
+	background-color:transparent;
+}
+
+/*---------------------------------------------------------------------
+ * 
+ *---------------------------------------------------------------------*/
+/* アイコン画像 */
+.icon {
+	width:16px;
+	height:16px;
+	border:none;
+}
+
+/*---------------------------------------------------------------------
+ * buttonbar:ボタンやリンクを揃えて入れる枠
+ *---------------------------------------------------------------------*/
+/*-----------------------------------
+ * 枠
+ *-----------------------------------*/
+.buttonbar {
+	margin: 5px 0;
+	padding: 2px;
+	text-align: right;
+	background-color: #eee;
+	border: 1px solid #cfcfcf;
+	background: url(../images/main.png) repeat-x;
+}
+
+/*-----------------------------------
+ * 枠内に配置したリンク
+ *-----------------------------------*/
+.buttonbar a, .buttonbar strong{
+	margin: 0 4px;
+}
+
+/*-----------------------------------
+ * 枠内に配置したボタン
+ *-----------------------------------*/
+.buttonbar button {
+	margin: 0 4px;
+}
+/*-----------------------------------
+ * ボタン全般
+ *-----------------------------------*/
+/* ボタン全般。通常は何も設定しなくてよい */
+button {
+	padding: 1px;
+	width: 8em;
+	cursor: pointer;
+	letter-spacing:0.2em;
+	font-size:14px;
+	font-family: ＭＳ ゴシック, MS Gothic, sans-serif;
+}
+
+/* 幅の狭いボタン */
+button.narrow {
+	width: 4em;
+}
+
+/* 幅の広いボタン */
+button.wide {
+	width: 12em;
+}
+
+/* 幅の広いボタン */
+button.wide2 {
+	width: 16em;
+}
+
+/* 小さいボタン（リストの内部で使用するなど） */
+button.small {
+	padding:0;
+	width:auto;
+	font-size:12px;
+	letter-spacing:0;
+}
+
+/* ボタン内の画像 */
+button img {
+	vertical-align: middle;
+	margin-right:3px;
+}
+/*-----------------------------------
+ * リンク全般
+ *-----------------------------------*/
+a {
+	color: #09c;
+	/* border:1px solid transparent; */
+	border-bottom: 1px solid #09c;
+}
+
+a:hover {
+	background-color: #9cf;
+	border-bottom:1px solid #69f;
+}
+/*-----------------------------------
+ * 必須マーク
+ *-----------------------------------*/
+span.m {
+	padding-left:0.5em;
+	color:#09c;
+	font-weight:normal;
+	font-family: ＭＳ Ｐゴシック, MS PGothic, sans-serif;
+}
+/*-----------------------------------
+ * 説明
+ *-----------------------------------*/
+span.d, div.d {
+	color:#333;
+	font-size:12px;
+}
+
+/* チェックボックスやラジオボタンに*のみ*必ず使用してください */
+label {
+	cursor: pointer;
+	color: #333;
+}
+/*---------------------------------------------------------------------
+ * 入力要素のデフォルト設定
+ *---------------------------------------------------------------------*/
+input, option, select, textarea{
+	margin:0;
+	padding:2px;
+	font-size:14px;
+	font-family: ＭＳ ゴシック, MS Gothic, sans-serif;
+}
+.listing input, .listing option, .listing select, .listing textarea{
+	padding:1px;
+}
+
