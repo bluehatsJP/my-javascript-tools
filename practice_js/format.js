@@ -23,8 +23,16 @@
         // 結果を組み合わせる：(a)小数点位置までの文字列
         // (b)小数点(c)残りの文字列
         // 最終結果を返す。
-        return str.substring(0, decpoint) + "." + str.substring(decpoint, str.length);
+        return formatCommas(str.substring(0, decpoint)) + "." + str.substring(decpoint, str.length);
     } else {
         return "NaN";
     }
+}
+
+function formatCommas(numString) {
+    var re = /(-?\d+)(\d{3})/;
+    while(re.test(numString)) {
+        numString = numString.replace(re, "$1,$2");
+    }
+    return numString
 }
