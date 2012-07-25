@@ -36,3 +36,8 @@ function formatCommas(numString) {
     }
     return numString
 }
+
+function stripCommas(numString) {
+    var re = /,/g;
+    return numString.replace(re, "");
+}
