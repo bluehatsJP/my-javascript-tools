@@ -25,14 +25,29 @@
 function checkDate(strDate) {
     var mo, day, yr;
     var entry = strDate;
-    var re = /\b\d{1,2}[\/-]\d{1,2}[\/-]\d{4}\b/;
-    if(re.test(entry)) {
+    var reLong = /\b\d{1,2}[\/-]\d{1,2}[\/-]\d{4}\b/;
+    var reShort = /\b\d{1,2}[\/-]\d{1,2}[\/-]\d{2}\b/;
+    var valid = (reLong.test(entry)) || (reShort.test(entry));
+    if(valid) {
         var delimChar = (entry.indexOf("/") != -1) ? "/" : "-";
         var delim1 = entry.indexOf(delimChar);
         var delim2 = entry.lastIndexOf(delimChar);
         mo = parseInt(entry.substring(0, delim1), 10);
         day = parseInt(entry.substring(delim1 + 1, delim2), 10);
         yr = parseInt(entry.substring(delim2 + 1),10);
+        // 2桁形式の年を処理する
+        if(yr < 100) {
+            var today = new Date();
+            // 現世紀の最初の年(例、2000)
+            var currCent = parseInt(today.getFullYear() / 100) * 100;
+            // 今年から15年後までは現世紀の年として扱う
+            var threshold = (today.getFullYear() + 15) - currCent;
+            if(yr > threshold) {
+                yr += currCent - 100;
+            } else {
+                yr += currCent;
+            }
+        }
         var testDate = new Date(yr, mo - 1, day);
         alert(testDate);
         if(testDate.getDate() == day) {
