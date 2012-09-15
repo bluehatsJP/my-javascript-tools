@@ -25,7 +25,7 @@
 }
 
 function array2String(array) {
-    var output = "";
+    var val, output = "";
     if (array) {
         output += "[";
         for (var i in array) {
