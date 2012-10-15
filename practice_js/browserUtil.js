@@ -31,3 +31,17 @@ function isLang(type) {
     }
     return (lang && lang.indexOf(type.toUpperCase()) === 0);
 }
+
+function linkTo(ieWinUrl,w3Url) {
+    var isWin = (navigator.userAgent.indexOf("Win") != -1);
+    var isIE5Min = getIEVersionNumber() >= 5;
+    var isW3 = (document.getElementById) ? true:false;
+    if (isWin && isIE5Min) {
+        location.href =ieWinUrl;
+        return false;
+    } else if (isW3) {
+        location.href = w3Url;
+        return false;
+    }
+    return true;
+}
