@@ -45,3 +45,12 @@ function linkTo(ieWinUrl,w3Url) {
     }
     return true;
 }
+
+function maximizeWindow() {
+    var offset = (navigator.userAgent.indexOf("Mac") != -1 ||
+                navigator.userAgent.indexOf("Gecko") != -1 ||
+                navigator.userAgent.indexOf("Netscape") != -1) ? 0 : 4;
+    window.moveTo(-offset, -offset);
+    window.resizeTo(screen.availWidth + (2 * offset),
+                    screen.availHeight + (2 * offset));
+}
