@@ -1,0 +1,36 @@
+﻿<html>
+<head>
+<title>Preferences</title>
+<script language="JavaScript" type="text/javascript">
+// ダイアログを閉じる
+function closeme() {
+    window.close();
+}
+
+// OKボタンをクリックしたときの処理
+function handleOK() {
+    if(opener && !opener.closed && opener.dialogWin) {
+        opener.dialogWin.returnFunc();
+    } else {
+        alert("You have closed the main window.\n\nNo action will be taken on the " +
+            "choices in this dialog box.");
+    }
+    closeme();
+    return false;
+}
+// キャンセルボタンをクリックしたときの処理
+function handleCancel() {
+    closeme();
+    return false;
+}
+</script>
+</head>
+<body onload="if (opener && opener.blockEvents) opener.blockEvents()"
+    onunload="if (opener && opener.unblockEvents) opener.unblockEvents()">
+<!-- ダイアログウィンドウのページコンテンツをここに記述する -->
+<form>
+<input type="button" value="Cancel" onclick="handleCancel()">
+<input type="button" value="   OK   " onclick="handleOK()">
+</form>
+</body>
+</html>

@@ -1,0 +1,21 @@
+﻿<html>
+<head>
+<title>Main Application Page</title>
+<script type="text/javascript" src="simModal.js"></script>
+<script language="JavaScript" type="text/javascript">
+// ダイアログのOKボタンを押して閉じたときに呼び出される関数
+function setPrefs() {
+    // ダイアログウィンドウでの選択を適用するための文をここに記述する
+}
+</script>
+</head>
+<body onclick="checkModal()" onforcus="return checkModal()">
+<!-- ここにページのコンテンツを記述する -->
+<a href="noPrefs.html" onmouseover="status='Set preferences...';return true"
+    onmouseout="status''; return true"
+    onclick="openSimDialog('dialog_main.html', 400, 300, setPrefs);return false">
+Preferences
+</a>
+<!-- ここに残りのページコンテンツを記述する -->
+</body>
+</html>

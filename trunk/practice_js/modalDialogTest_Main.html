@@ -1,0 +1,16 @@
+﻿<html>
+<head>
+<script type="text/javascript">
+function openDialog(form) {
+	var result = window.showModalDialog("modalDialogTest_Sub.html", form,
+		"dialogWidth:300px; dailogHeight:201px; center:yes");
+}
+</script>
+</head>
+<body>
+<form name="sample" action="#" onsubmit="return false">
+Enter your name for the dialog box:<input name="yourName" type="text" />
+<input type="button" value="Send to Dialog" onclick="openDialog(this.form)" />
+</form>
+</body>
+</html>
