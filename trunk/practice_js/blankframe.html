@@ -1,0 +1,16 @@
+﻿<html>
+<head>
+<script type="text/javascript">
+<!--
+function blankFrame() {
+	return "<html><body bgcolor='#ccee99'></body></html>";
+}
+//-->
+</script>
+</head>
+<frameset rows="30, 30, *">
+	<frame name="frame1" id="frame1" src="modalDialogTest_Main.html">
+	<frame name="frame2" id="frame2" src="javascript:parent.blankFrame()">
+	<frame name="frame3" id="frame3" src="blankframe2.html">
+</frameset>
+</html>
